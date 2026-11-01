@@ -14,8 +14,8 @@ if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
 	EOF
 fi
 
-sed -i "/log-facility/d" "/etc/dnsmasq.conf"
-echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
+# Preserve the user's logging policy and resolve legacy static/UCI duplication.
+/usr/libexec/immortalwrt/dnsmasq-logfacility
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
 

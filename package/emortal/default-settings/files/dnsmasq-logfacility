@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# dnsmasq reads this file in addition to its generated UCI configuration.
+# An explicit UCI logfacility must not be repeated in the shared static file.
+# Keep raw-only settings and comments, and do not force a new logging policy.
+config_file="${1:-/etc/dnsmasq.conf}"
+[ -f "$config_file" ] || exit 0
+
+dnsmasq_index=0
+while uci -q get "dhcp.@dnsmasq[$dnsmasq_index]" >/dev/null; do
+	if [ -n "$(uci -q get "dhcp.@dnsmasq[$dnsmasq_index].logfacility")" ]; then
+		sed -i '/^[[:space:]]*log-facility[[:space:]]*=/s/^/# UCI logfacility: /' "$config_file"
+		exit $?
+	fi
+	dnsmasq_index=$((dnsmasq_index + 1))
+done
+
+exit 0
