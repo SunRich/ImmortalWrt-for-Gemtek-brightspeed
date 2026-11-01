@@ -1,0 +1,19 @@
+diff --git a/lang/python/python3/Makefile b/lang/python/python3/Makefile
+index 7e07cd6..a44f3fb 100644
+--- a/lang/python/python3/Makefile
++++ b/lang/python/python3/Makefile
+@@ -168,6 +168,14 @@ CONFIGURE_VARS += \
+ 	py_cv_module__tkinter=n/a \
+ 	py_cv_module_nis=n/a
+ 
++# Keep an unselected extension out of a cross build. GLib may stage its
++# bundled libffi.pc without the matching headers, which otherwise makes
++# configure enable _ctypes even when python3-ctypes is not selected.
++PKG_CONFIG_DEPENDS += CONFIG_PACKAGE_python3-ctypes
++ifeq ($(CONFIG_PACKAGE_python3-ctypes),)
++CONFIGURE_VARS += py_cv_module__ctypes=n/a
++endif
++
+ # Workaround for hardfloat mips
+ # https://bugs.python.org/issue46265
+ ifneq ($(findstring mips,$(CONFIG_ARCH)),)

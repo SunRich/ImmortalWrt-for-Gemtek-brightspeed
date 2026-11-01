@@ -1,0 +1,27 @@
+From: Codex <codex@openai.com>
+Subject: [PATCH] wifi: mt76: mt7996: flush NPU state for non-MLO station removal
+
+Applies after the firmware's 0003 NPU station-removal patch to mt76
+467ae2e3f190baf737e15e318906da0dc7d0ab91.
+
+link_valid is initialized from sta->valid_links, so non-MLO clients skip
+an NPU deletion placed exclusively in the link_valid block. Preserve the
+existing MLO deletion path and also delete state when a non-MLO station
+is finally removed (flush=true), before its WCID can be reused.
+
+---
+--- a/mt7996/main.c
++++ b/mt7996/main.c
+@@ -1319,6 +1319,12 @@
+ 		mt7996_sta_deflink_release(dev, sta, link_id);
+ 		msta_link->wcid.link_valid = false;
+ 		msta->seclink_id = mt7996_sta_seclink_get(dev, msta);
++	} else if (flush && !sta->valid_links) {
++		/* Non-MLO stations have link_valid == false, but still own NPU
++		 * station state that must be invalidated before WCID reuse.
++		 */
++		mt76_npu_del_sta(&dev->mt76, msta_link->wcid.phy_idx,
++				 msta_link->wcid.idx);
+ 	}
+ 
+ 	if (flush) {

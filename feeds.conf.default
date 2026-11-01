@@ -4,7 +4,7 @@ src-git luci https://github.com/immortalwrt/luci.git
 src-git routing https://github.com/openwrt/routing.git
 src-git telephony https://github.com/openwrt/telephony.git
 #src-git video https://github.com/openwrt/video.git
-src-git app_airoha https://github.com/naoki66/luci-app-airoha.git
+src-git app_airoha https://github.com/naoki66/luci-app-airoha.git^b1b487b5326fa2a9acccfec122d607c7bf175974
 src-git pon_drivers https://github.com/naoki66/openwrt-pon-drivers.git
 src-git onu_config https://github.com/naoki66/OpenWrt_ONU_CONFIG.git
 #src-git targets https://github.com/openwrt/targets.git

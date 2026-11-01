@@ -80,6 +80,15 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           bash scripts/fix-stale-golang-host.sh
+          if [ '${{ inputs.config_seed }}' = '1710.config' ]; then
+            # These unselected packages have circular feed Kconfig dependencies.
+            if grep -Eq '^CONFIG_PACKAGE_(fwknop|fwknopd|luci-app-fwknopd|squeezelite-(custom|dynamic|full))=(y|m)$' 1710.config; then
+              echo 'Cannot exclude selected packages from feed metadata' >&2
+              exit 1
+            fi
+            rm -f package/feeds/packages/fwknop package/feeds/packages/squeezelite \
+              package/feeds/luci/luci-app-fwknopd
+          fi
 
       - name: Apply feed patches
         run: FEED_PATCHES_STRICT=1 bash scripts/apply-feed-patches.sh
@@ -87,11 +96,21 @@ jobs:
       - name: Configure
         run: |
           cp '${{ inputs.config_seed }}' .config
+          if [ '${{ inputs.config_seed }}' = '1710.config' ]; then
+            # Build the running XR1710G layout with board defaults built in.
+            sed -i \
+              '/^CONFIG_TARGET_MULTI_PROFILE=y$/d;
+              /^CONFIG_TARGET_PER_DEVICE_ROOTFS=y$/d;
+              /^CONFIG_TARGET_DEVICE_airoha_an7581_DEVICE_gemtek_xr1710g\(-ubi\)\?=y$/d;
+              /^# CONFIG_TARGET_airoha_an7581_DEVICE_gemtek_xr1710g is not set$/d' .config
+            echo 'CONFIG_TARGET_airoha_an7581_DEVICE_gemtek_xr1710g=y' >> .config
+          fi
           BUILD_DATE='${{ steps.version.outputs.date }}' \
           BUILD_ID='${{ steps.version.outputs.build_id }}' \
           REPO_COMMIT='${{ steps.version.outputs.repo_commit }}' \
           UPSTREAM_COMMIT='${{ steps.version.outputs.upstream_commit }}' \
           VERSION_CODE='${{ steps.version.outputs.version_code }}' \
+          VERSION_DIST='ImmortalWrt naoki66 ${{ steps.version.outputs.device_model }}' \
           bash scripts/set-build-version.sh .config
           make defconfig
           bash scripts/check-gemtek-profile-isolation.sh --config .config
@@ -112,7 +131,7 @@ jobs:
           failed_pkg=$(grep 'ERROR:.*failed to build' build.log | head -1 | sed 's/.*ERROR: \(.*\) failed to build.*/\1/' || true)
           if [ -n "$failed_pkg" ]; then
             echo "=== Rebuilding $failed_pkg with V=s ==="
-            make "package/$failed_pkg/compile" V=s -j1 2>&1 | tee build-verbose.log || true
+            make "$failed_pkg/compile" V=s -j1 2>&1 | tee build-verbose.log || true
             echo "=== First errors in build-verbose.log ==="
             grep -nE "error:|Error [0-9]|FAILED|Patch failed|No rule to make target" build-verbose.log | head -40 || true
             echo "=== tail of build-verbose.log ==="
