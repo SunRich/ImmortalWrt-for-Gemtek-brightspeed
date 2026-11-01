@@ -246,6 +246,7 @@ define Device/gemtek_xr1710g
   DEVICE_DTS := an7581-xr1710g
   $(call Device/gemtek_xr1710g-common)
   SUPPORTED_DEVICES := gemtek,xr1710g
+  DEVICE_DTC_FLAGS := -@
 endef
 TARGET_DEVICES += gemtek_xr1710g
 
