@@ -1,0 +1,18 @@
+diff --git a/net/smartdns/Makefile b/net/smartdns/Makefile
+index 94174ce..320db77 100644
+--- a/net/smartdns/Makefile
++++ b/net/smartdns/Makefile
+@@ -96,10 +96,11 @@ define Build/Compile
+ 
+ ifneq ($(CONFIG_PACKAGE_smartdns-ui),)
+ 	( \
++		set -e ; \
+ 		pushd $(PKG_BUILD_DIR) ; \
+ 		pushd smartdns-webui ; \
+-		npm install ; \
+-		npm run build ; \
++		npm ci ; \
++		NEXT_TELEMETRY_DISABLED=1 npm run build ; \
+ 		popd ; \
+ 		pushd plugin/smartdns-ui ; \
+ 		$(CARGO_PKG_CONFIG_VARS) \

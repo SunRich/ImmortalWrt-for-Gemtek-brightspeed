@@ -1,0 +1,45 @@
+XR1710G N6 stability candidate
+
+Base: naoki66/ImmortalWrt-for-Gemtek-brightspeed master
+      8f92c5427fd902eb5c32006d1bc1ed9954055378
+Component updates: selected upstream commits through ImmortalWrt
+      32bec3df4163228f00dd1cd054a28e7053f4d2ac
+The upstream commits are cherry-picked with their original IDs recorded in
+commit messages. The downstream Airoha Ethernet patch stack is retained.
+
+Critical package baselines:
+  procd / procd-ujail  2026.10.18~5aef7c33-r1 (includes 4734b86)
+  dnsmasq-full        2.93-r5 (reload performance fixes)
+  mac80211            7.2-r9
+  ucode               2026.10.18~d2e8b8d2-r1, ABI 20261009
+  mt76 / mt7996e      2026.10.08~467ae2e3-r2
+
+Fixes:
+  - Notify NPU when a non-MLO station is finally removed, before WCID reuse.
+    This remains a candidate cause-specific fix pending controlled device tests.
+  - Do not force log-facility=/dev/null from a first-boot script.
+    Explicit UCI logging takes precedence over a duplicate static directive.
+    Raw-only settings and existing comments are preserved; application is
+    idempotent. The initializer does not edit UCI or restart dnsmasq.
+  - Retain the boot-proven legacy partition map, I2C compatible and WAN reset.
+  - Pin feeds and the generated SDK base feed to immutable commits.
+
+Cloud workflow: .github/workflows/xr1710g-n6-stability.yml
+  Push to codex/xr1710g-n6-stability or dispatch manually.
+  Build only gemtek_xr1710g, with the matching SDK and binary package set.
+  Source and image verification reject known package regressions, the wrong
+  profile, invalid FIT payload hashes, an unexpected device tree, unexpected
+  NPU firmware, missing fix code, or kernel overlap with reserved NPU memory.
+  Successful outputs are published as a prerelease in the fork, including
+  manifests, effective configuration, provenance and SHA256SUMS.
+
+Local checks:
+  bash scripts/test-dnsmasq-logfacility.sh   (requires dnsmasq; syntax only)
+  bash scripts/setup-xr1710g-n6.sh           (Linux, installs pinned feeds)
+  python3 scripts/verify-xr1710g-n6.py source
+
+Cloud validation is not hardware acceptance. No workflow flashes a device.
+After separate upgrade authorization, verify first boot, actual DHCP exchange,
+repeated service reload, client reconnection/WCID reuse and sustained transfer.
+Do not infer hardware stability solely from a successful build or transfer.
+Only the legacy gemtek,xr1710g layout is targeted; UBI migration is separate.

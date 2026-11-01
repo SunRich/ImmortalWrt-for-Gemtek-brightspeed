@@ -1,0 +1,9 @@
+{
+  "reference_release": "https://github.com/naoki66/ImmortalWrt-for-Gemtek-brightspeed/releases/tag/20261029-8f57dd40",
+  "reference_image_sha256": "a5a22cf07dd5e22ba322cdb9947039f9d842d00304f91a95fb7f12877e89e10d",
+  "legacy_dtb_semantic_sha256": "438157e9d8471c85efbc3b4b7983070295e1f53e93c6ba0b9f99c83ac5eed90a",
+  "npu_firmware_sha256": {
+    "lib/firmware/airoha/en7581_MT7996_npu_data.bin": "61a75afb052feed2ceb2f3023e16f50317c05c78f9c8e564bf01924ce39c7ec1",
+    "lib/firmware/airoha/en7581_MT7996_npu_rv32.bin": "e743d1b59a9ca6d043e38ff71075e8d28702a104b94abb17a4035514efda4643"
+  }
+}
