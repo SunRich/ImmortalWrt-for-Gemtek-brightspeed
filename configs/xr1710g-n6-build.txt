@@ -6,6 +6,8 @@ Component updates: selected upstream commits through ImmortalWrt
       32bec3df4163228f00dd1cd054a28e7053f4d2ac
 The upstream commits are cherry-picked with their original IDs recorded in
 commit messages. The downstream Airoha Ethernet patch stack is retained.
+The ancestry baseline is 2248ed75465327b4eed0ffcc3ece361dc1e62d75;
+the version label does not claim that the entire 32bec3df tree was merged.
 
 Critical package baselines:
   procd / procd-ujail  2026.10.18~5aef7c33-r1 (includes 4734b86)
